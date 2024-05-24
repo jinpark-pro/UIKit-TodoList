@@ -10,12 +10,17 @@ import UIKit
 class ViewController: UIViewController, AddTodoViewControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     
     var tableView: UITableView!
-    var todoItems: [Priority: [TodoItem]] = [.low: [], .medium: [], .high: []]
+    var todoItems: [Priority: [TodoItem]] = [.low: [], .medium: [], .high: []] {
+        didSet {
+            saveTodoItems()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setupNavigationBar()
+        loadTodoItems()
     }
     
     func setupTableView() {
@@ -44,6 +49,23 @@ class ViewController: UIViewController, AddTodoViewControllerDelegate, UITableVi
     func save(todoItem: TodoItem) {
         todoItems[todoItem.priority]?.append(todoItem)
         tableView.reloadData()
+    }
+    
+    // data manage
+    func saveTodoItems() {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(todoItems) {
+            UserDefaults.standard.set(encoded, forKey: "todoItems")
+        }
+    }
+    
+    func loadTodoItems() {
+        if let savedItems = UserDefaults.standard.data(forKey: "todoItems") {
+            let decoder = JSONDecoder()
+            if let loadedItems = try? decoder.decode([Priority: [TodoItem]].self, from: savedItems) {
+                todoItems = loadedItems
+            }
+        }
     }
     
     // MARK: - UITableViewDataSource

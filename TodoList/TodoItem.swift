@@ -7,13 +7,13 @@
 
 import Foundation
 
-enum Priority: String, CaseIterable {
+enum Priority: String, CaseIterable, Codable {
     case high = "High"
     case medium = "Medium"
     case low = "Low"
 }
 
-struct TodoItem {
+struct TodoItem: Codable {
     var id: UUID
     var title: String
     var isCompleted: Bool
